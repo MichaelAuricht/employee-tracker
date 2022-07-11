@@ -12,4 +12,4 @@ This application will allow users to view, add, and edit employees, roles, depar
 
 ## Links
 
-[Walkthrough](LINK)
+[Walkthrough](https://drive.google.com/file/d/1S1jH-CJPDVmooHHIcgcSQ1bt3KvGePym/view?usp=sharing)

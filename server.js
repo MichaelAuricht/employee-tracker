@@ -4,8 +4,8 @@ const mysql2 = require('mysql2');
 require('dotenv').config();
 
 //classes
-class Department{
-    constructor({id,name,employees = [],roles = []}){
+class Department {
+    constructor ( { id, name, employees = [], roles = [] } ) {
         this.id = id;
         this.name = name;
         this.employees = employees;
@@ -13,19 +13,19 @@ class Department{
     }
 }
 
-class Role{
-    constructor({id, title, salary, department, department_id, employees = []}){
+class Role {
+    constructor( { id, title, salary, department, department_id, employees = [] } ) {
         this.id = id;
         this.title = title;
         this.salary = salary;
         this.department = department;
-        this.department_id = department_id
+        this.department_id = department_id;
         this.employees = employees;
     }
 }
 
-class Employee{
-    constructor({id, first_name, last_name, role, role_id, department}){
+class Employee {
+    constructor( { id, first_name, last_name, role, role_id, department } ) {
         this.id = id;
         this.first_name = first_name;
         this.last_name = last_name;
@@ -38,8 +38,8 @@ class Employee{
 //SQL
 const connection = mysql2.createConnection({
     host: 'localhost',
-    user: 'root',
-    password: process.env.SQL_PASS,
+    user: 'michael',
+    password: process.env.DB_PASSWORD,
     database: 'employeeTrackerDB'
 });
 //instead of making a connections each time, i've made a promise that i call from the functions
@@ -51,12 +51,12 @@ const sql_query = (command) => new Promise((resolve, reject) => {
 })
 
 //adding name to the department
-function createNewDepartment(){
-    inquirer.prompt({
+function createNewDepartment() {
+    inquirer.prompt( {
         type: 'input',
         name: 'deptName',
         message: 'What is the department name?'
-    }).then((answer) => {
+    } ).then( (answer) => {
         console.log('Creating department...');
         currentDepartment.name = answer.deptName;
         sql_query(`INSERT INTO department (name) VALUES ('${answer.deptName}');`)
@@ -68,7 +68,7 @@ function createNewDepartment(){
 }
 
 //adding all the details for each role
-function createNewRole(){
+function createNewRole() {
     //pulling deptments from sql so you can select from all departments
     var depts = []
     sql_query('SELECT name FROM department;')
@@ -113,7 +113,7 @@ function createNewRole(){
 }
 
 
-function createNewEmployee(){
+function createNewEmployee() {
     //pulling departments and roles from sql so you can select from all
     var depts = []
     var roles = []
@@ -127,7 +127,7 @@ function createNewEmployee(){
         type: 'input',
         name: 'employeename',
         message: 'What is the employees name?'
-    }).then((answer) =>{
+    }).then((answer) => {
         employee.first_name = answer.employeename.split(' ')[0];
         employee.last_name = answer.employeename.split(' ')[1];
         inquirer.prompt({
@@ -135,7 +135,7 @@ function createNewEmployee(){
             name: 'role',
             message: 'What is the employees position?',
             choices: roles
-        }).then(async (answer) =>{
+        }).then(async (answer) => {
             employee.role = answer.role;
             //async as was having issues with undefined data being entered into sql
             await inquirer.prompt({
@@ -167,7 +167,7 @@ function createNewEmployee(){
 }
 
 //main function that starts the questions
-function menu(){
+function menu() {
     inquirer.prompt({
         type: 'list',
         name: 'initialPrompt',
@@ -206,6 +206,12 @@ function menu(){
     })
 }
 // calling to start
-menu();
-// creating a global variable od department
+const PORT = process.env.PORT || 3001;
+connection.connect((err) => {
+    console.log(err);
+    if (err) throw err;
+    console.log(`connected as id ${connection.threadId}\non port: ${PORT}`);
+    menu();
+});
+// creating a global variable of department
 var currentDepartment = new Department({});
